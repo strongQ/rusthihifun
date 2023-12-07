@@ -45,6 +45,15 @@ pub struct LoginReq{
   pub code_id:i64
 }
 
+// 登录请求参数
+#[derive(Serialize, Deserialize, Clone, Debug, ToSchema)]
+pub struct ChangePwdReq{ 
+  #[serde(rename="passwordNew")]
+  pub passwordnew:Option<String>,
+  #[serde(rename="passwordOld")]
+  pub passwordold:Option<String>,
+}
+
 // 用户信息返回
 #[derive(Serialize, Deserialize, Clone, Debug,ToSchema)]
 #[salvo(schema(rename_all="camelCase"))]
@@ -84,8 +93,7 @@ pub struct OnlineUserRes {
 
 
 #[derive(Debug,Serialize,ToParameters,Deserialize,Clone)]
-#[salvo(parameters(rename_all="camelCase"))]
-#[serde(rename_all(deserialize="camelCase"))]
+
 #[salvo(parameters(parameter_in = Query))]
 pub struct PageUserInput{
   #[serde(rename="Page")]
@@ -95,9 +103,10 @@ pub struct PageUserInput{
    pub field:Option<String>,
    pub order:Option<String>,
    pub descstr:Option<String>,
-
+   #[serde(rename="Account")]
    pub account:Option<String>,
    pub realname:Option<String>,
+   #[serde(rename="Phone")]
    pub phone:Option<String>,
    #[serde(rename="OrgId")]
    pub orgid:i64

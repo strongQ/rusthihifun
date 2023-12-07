@@ -5,3 +5,5 @@ pub mod entity_sysnotice;
 pub mod entity_sysorg;
 pub mod entity_syspos;
 pub mod entity_sysrole;
+pub mod  entity_sysuser_extorg;
+pub mod entity_sysuser_role;

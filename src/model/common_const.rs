@@ -6,3 +6,5 @@ pub const SYS_CAPTCHA:&str="sys_captcha";
 pub const SYS_WATERMARK:&str="sys_watermark";
 /// 权限缓存（按钮集合）
 pub const KEY_PERMISSION:&str="permission:";
+/// 默认密码
+pub const SYS_PASSWORD:&str="sys_password";

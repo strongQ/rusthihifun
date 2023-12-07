@@ -5,18 +5,19 @@ use rbatis::{rbdc::datetime::DateTime, RBatis, sql, py_sql};
 
 use crate::model::user_model::LoginUserRes;
 
-use super::{entity_sysorg::NetSysOrg, entity_syspos::NetSysPos};
+use super::entity_sysuser_extorg::NetUserExtOrg;
+
+
 
 
 
 #[derive(Serialize, Deserialize, Clone, Debug,ToSchema)]
-#[salvo(schema(rename_all="camelCase"))]
 pub struct NetSysUser {
     
     pub id: i64,
     pub account: String,
     pub accounttype: i32,
-    pub password: Option<String>,
+    pub  password: Option<String>,
     pub realname:Option<String>,
     // 昵称
     pub nickname:Option<String>,
@@ -40,9 +41,9 @@ pub struct NetSysUser {
     pub emergencyaddress:Option<String>,
     pub introduction:Option<String>,
     pub orgid:i64,
-    pub sysorg:Option<NetSysOrg>,
+ 
     pub posid:i64,
-    pub syspos:Option<NetSysPos>,
+
     pub jobnum:Option<String>,
     pub poslevel:Option<String>,
     pub joindate:Option<DateTime>,
@@ -59,7 +60,32 @@ pub struct NetSysUser {
     pub createuserid: Option<i64>,
     pub updateuserid: Option<i64>,
     pub isdelete: bool,
+
+    
+    
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug,ToSchema)]
+pub struct NetSysUserInput {
+  pub account:String,
+  pub birthday:Option<DateTime>, 
+   // 昵称
+   #[serde(rename="nickName")]
+  pub nickname:Option<String>,
+  #[serde(rename="orgId")]
+  pub orgid:i64,
+  pub phone:Option<String>,
+  #[serde(rename="posId")]
+  pub posid:i64,
+  #[serde(rename="realName")]
+  pub realname:Option<String>,
+  #[serde(rename="roleIdList")]
+  pub roleidlist:Option<Vec<i64>>,
+  #[serde(rename="extOrgIdList")]
+  pub extorgidlist:Option<Vec<NetUserExtOrg>>
+}
+
+
 
 #[derive(Serialize, Deserialize, Clone, Debug,ToSchema)]
 #[salvo(schema(rename_all="camelCase"))]
@@ -74,6 +100,12 @@ pub struct NetSysUserDto {
  impl Default  for NetSysUserDto {
     fn default() -> Self {
         Self { id: Default::default(), status: Default::default(), account: Default::default(), accounttype: Default::default(), password: Default::default() }
+    }
+}
+
+impl  Default for NetSysUser {
+    fn default() -> Self {
+        Self { id: Default::default(), account: Default::default(), accounttype: Default::default(), password: Default::default(), realname: Default::default(), nickname: Default::default(), avatar: Default::default(), sex: Default::default(), age: Default::default(), birthday: Default::default(), nation: Default::default(), phone: Default::default(), cardtype: Default::default(), idcardnum: Default::default(), email: Default::default(), address: Default::default(), culturelevel: Default::default(), politicaloutlook: Default::default(), college: Default::default(), officephone: Default::default(), emergencycontact: Default::default(), emergencyphone: Default::default(), emergencyaddress: Default::default(), introduction: Default::default(), orgid: Default::default(), posid: Default::default(), jobnum: Default::default(), poslevel: Default::default(), joindate: Default::default(), lastloginip: Default::default(), lastloginaddress: Default::default(), lastlogintime: Default::default(), lastlogindevice: Default::default(), signature: Default::default(), status: Default::default(), orderno: Default::default(), remark: Default::default(), createtime: Default::default(), updatetime: Default::default(), createuserid: Default::default(), updateuserid: Default::default(), isdelete: Default::default() }
     }
 }
 

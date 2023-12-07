@@ -30,6 +30,13 @@ pub struct NameInput{
    
 }
 
+#[derive(Debug,Serialize,ToParameters,Deserialize,Clone,ToSchema)]
+#[salvo(parameters(rename_all="camelCase"))]
+#[serde(rename_all(deserialize="camelCase"))]
+pub struct IdInput{
+   pub id:i64
+}
+
 #[derive(Debug,Serialize,ToParameters,Deserialize,Clone)]
 #[salvo(parameters(rename_all="camelCase"))]
 #[serde(rename_all(deserialize="camelCase"))]

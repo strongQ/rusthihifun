@@ -6,14 +6,15 @@ use std::vec;
 
 use idgenerator::IdInstance;
 use salvo::{endpoint, Depot, Response, Request};
-use salvo::oapi::extract::JsonBody;
+use salvo::oapi::extract::{JsonBody, PathParam};
 
 use crate::GLOBAL_DB;
 use crate::entity::entity_sysconfig:: NetSysConfigDto;
-use crate::entity::entity_sysuser::NetSysUser;
+use crate::entity::entity_sysuser::{NetSysUser, NetSysUserInput};
+use crate::entity::entity_sysuser_extorg::NetUserExtOrg;
 use crate::model::common_const::{SYS_WATERMARK, SYS_CAPTCHA, SYS_SECOND_VER};
-use crate::model::common_model::Page;
-use crate::model::user_model::{CaptchaRes, ConfigRes, LoginReq, LoginRes, LoginUserRes, LoginState, OnlineUserRes, PageUserInput};
+use crate::model::common_model::{Page, IdInput};
+use crate::model::user_model::{CaptchaRes, ConfigRes, LoginReq, LoginRes, LoginUserRes, LoginState, OnlineUserRes, PageUserInput, ChangePwdReq};
 use crate::service::{sysconfig_service, user_service};
 use crate::utils::captcha;
 use crate::utils::res::{res_json_ok, res_json_err, res_json_custom};
@@ -154,7 +155,55 @@ pub async fn login(login_body:JsonBody<LoginReq>,res: &mut Response)->Res<LoginR
 }
 return  Err(res_json_err("登录账号有误".to_string()));
 }
+/// 查看用户基本信息
+#[endpoint(
+  tags("用户"),
+  responses(
+    (status_code = 200,body=ResObj<NetSysUser>,description ="查看用户基本信息")
+  ),
+)]
+pub async fn get_baseinfo(depot: &mut Depot)->Res<NetSysUser>{
 
+  let state = depot.get::<LoginState>("user_state").unwrap();
+  let result= user_service::get_baseinfo(state.userid).await;
+  match result {
+    Ok(user)=>{
+     return  Ok(res_json_ok(Some(user)))
+
+    },
+    Err(msg)=>{
+
+     return  Err(res_json_err(msg))
+    }
+      
+  } 
+}
+
+/// 修改密码
+#[endpoint(
+  tags("用户"),
+  responses(
+    (status_code = 200,body=ResObj<i32>,description ="修改密码")
+  ),
+)]
+pub async fn change_pwd(depot: &mut Depot,login_body:JsonBody<ChangePwdReq>)->Res<i32>{
+  let state = depot.get::<LoginState>("user_state").unwrap();
+  let pwd=login_body.into_inner();
+
+  let result= user_service::change_pwd(pwd, state.userid).await;
+
+  match result {
+    Ok(user)=>{
+     return  Ok(res_json_ok(Some(user)))
+
+    },
+    Err(msg)=>{
+
+     return  Err(res_json_err(msg))
+    }
+      
+  } 
+}
 
 /// 获取用户信息
 #[endpoint(
@@ -193,8 +242,10 @@ pub async fn get_info(depot: &mut Depot)->Res<LoginUserRes>{
 )]
 pub async fn get_user_page(req:&mut Request,depot: &mut Depot)->Res<Page<NetSysUser>>{
 
-  let payload=req.parse_queries::<PageUserInput>().unwrap_or_default();
   let state = depot.get::<LoginState>("user_state").unwrap();
+ 
+  let payload=req.parse_queries::<PageUserInput>().unwrap();
+ 
   let result= user_service::get_user_page(payload,state.userid,state.accounttype).await;
 
   match result{
@@ -221,6 +272,103 @@ pub async fn get_user_page(req:&mut Request,depot: &mut Depot)->Res<Page<NetSysU
 pub async fn get_online_user_page()->Res<Page<OnlineUserRes>>{
    
   Ok(res_json_ok(None))
+}
+
+
+/// 获取用户扩展机构集合
+#[endpoint(
+  tags("用户"),  
+  responses(
+      (status_code = 200,body=ResObj<Vec<NetUserExtOrg>>,description ="获取用户扩展机构集合")
+
+  ),
+)]
+pub async fn get_ext_orgs(id:PathParam<Option<i64>>)->Res<Vec<NetUserExtOrg>>{
+ let result=user_service::get_ext_orgs(id).await;
+
+ match result{
+  Ok(data)=>{
+
+      
+      return  Ok(res_json_ok(Some(data)))
+  },
+  Err(err)=>{
+
+      return  Err(res_json_err(err.to_string()))
+  }
+ }
+}
+
+/// 重置密码
+#[endpoint(
+  tags("用户"),  
+  responses(
+      (status_code = 200,body=ResObj<i32>,description ="重置密码")
+
+  ),
+)]
+pub async fn reset_pwd(login_body:JsonBody<IdInput>)->Res<i32>{
+   let result=user_service::reset_pwd(login_body.into_inner()).await;
+   match result{
+    Ok(data)=>{
+  
+        
+        return  Ok(res_json_ok(Some(data)))
+    },
+    Err(err)=>{
+  
+        return  Err(res_json_err(err.to_string()))
+    }
+   }
+}
+
+/// 重置密码
+#[endpoint(
+  tags("用户"),  
+  responses(
+      (status_code = 200,body=ResObj<String>,description ="删除账号")
+
+  ),
+)]
+pub async fn delete(login_body:JsonBody<IdInput>)->Res<String>{
+   let result=user_service::delete(login_body.into_inner()).await;
+   match result{
+    Ok(_data)=>{
+  
+        
+        return  Ok(res_json_ok(Some("".to_string())))
+    },
+    Err(err)=>{
+  
+        return  Err(res_json_err(err.to_string()))
+    }
+   }
+}
+
+
+/// 添加账号
+#[endpoint(
+  tags("用户"),  
+  responses(
+      (status_code = 200,body=ResObj<String>,description ="添加账号")
+  ),
+)]
+pub async fn add(login_body:JsonBody<NetSysUserInput>)->Res<String>{
+  let input=login_body.into_inner();
+ 
+
+   let result=user_service::add(input).await;
+   match result{
+    Ok(data)=>{
+  
+        
+        return  Ok(res_json_ok(Some(data)))
+    },
+    Err(err)=>{
+  
+        return  Err(res_json_err(err.to_string()))
+    }
+   }
 }
 
 

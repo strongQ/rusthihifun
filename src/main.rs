@@ -24,7 +24,7 @@ pub static GLOBAL_DB: Lazy<RBatis> = Lazy::new(|| RBatis::new());
 
 pub static  GLOBAL_REDIS:Lazy<Client>=Lazy::new(|| {
 
-    let client=redis::Client::open("redis://hihi.fun:60079").expect("连接redis失败");
+    let client=redis::Client::open("redis://ip:port").expect("连接redis失败");
     client.get_connection().expect("连接redis失败");
     return  client;
 });

@@ -3,5 +3,5 @@ use crate::GLOBAL_DB;
 pub async fn init_db(){
     fast_log::init(fast_log::Config::new().console()).expect("rbatis init fail");
 
-    GLOBAL_DB.init(rbdc_pg::driver::PgDriver{},"postgres://postgres:pg@ip:20/rustadmin").unwrap();
+    GLOBAL_DB.init(rbdc_pg::driver::PgDriver{},"postgres://postgres:pwd@ip:port/db").unwrap();
 }

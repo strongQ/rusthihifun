@@ -7,6 +7,6 @@ use crate::controller::role_controller;
 pub fn init_router()->Router{
     let router = Router::new();
     router.push(
-        Router::with_path("/api/sysRole/list").get(role_controller::get_role_list)
-    )
+        Router::with_path("/api/sysRole/list").get(role_controller::get_role_list))
+        
 }
