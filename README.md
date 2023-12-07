@@ -22,5 +22,5 @@ idgenerator （产生16位雪花id，适配vue前端）
 3. 用户管理
 
 # api地址
-/swagger   登录密码 admin admin2023
+/swagger   登录账号 admin admin2023    
 /scalar
